@@ -244,7 +244,7 @@ class ReversiApp extends Component {
       APP_CONST.UI_STATE_CANCELED === uiState) {
 
       const positions = this.state.game.positions;
-      if (ply <= positions.length) {
+      if (ply < positions.length) {
         const pos = positions[ply];
         this.setState({
           position: {position: pos, currMove: this.state.game.moves[ply-1], },

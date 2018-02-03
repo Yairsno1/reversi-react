@@ -34,13 +34,14 @@ export function getUINextState(currState, operation) {
   [UI_STATE_PLAYING, UI_STATE_CANCELED, UI_STATE_CANCELED, UI_STATE_CANCELED, UI_STATE_CANCELED],
   [UI_STATE_PLAYING, UI_STATE_END_OF_GAME, UI_STATE_END_OF_GAME, UI_STATE_END_OF_GAME, UI_STATE_END_OF_GAME]];
 
-  if (currState < UI_STATE_GAME_TO_START || currState >= UI_STATES_COUNT) {
-    throw "Invalid UI state.";
-  } else if (operation < UI_OP_PLAY || operation >= UI_OP_COUNT) {
-    throw "Invalid UI operation.";
+  let rv = currState;
+  if (currState >= UI_STATE_GAME_TO_START && currState < UI_STATES_COUNT) {
+    if (operation >= UI_OP_PLAY && operation < UI_OP_COUNT) {
+      rv = (uiTransitionsTable[currState])[operation];
+    }
   }
 
-  return (uiTransitionsTable[currState])[operation];
+  return rv;
 }
 
 function isElementInViewport(parent, elem) {
