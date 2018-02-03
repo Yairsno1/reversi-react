@@ -1,0 +1,826 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+  <link rel="stylesheet" type="text/css" href="css/frmnewgame.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script src="js/index.js"></script>
+  <script src="js/uiState.js"></script>
+
+  <title>Reversi - Starts to getting in shape</title>
+
+</head>
+<body>
+  <!-- New game form (modal) -->
+  <div id="frm-new-game-back" class="modal">
+    <div id="pnl-new-game">
+      <span id="btn-close-frm" class="material-icons" onclick="btnCloseFrm_clicked()">clear</span>
+      <div class="select-label">Play against</div>
+
+      <div id="pnlOpponentKind">
+        <div class="opponent-kind">
+          <img id="imgEngine" src="./images/machine.png" alt="Engine" style="width:35%" onclick="rbOpponentKind_selected(1)">
+          <span class="tooltiptext">Play against the machine</span>
+        </div>  
+        <div id="opponent-kind-player" class="opponent-kind">
+          <img id="imgPlayer" src="./images/player.png" alt="Other player" style="width:35%" onclick="rbOpponentKind_selected(2)">
+          <span class="tooltiptext">Play against other player</span>
+        </div>
+      </div>
+
+      <div id="pnlYourColor">
+        <div id="lblYourColor" class="select-label">Select your color</div>
+        <div id="divYourColorWhite" class="your-color">
+          <div id="rectWhite" class="player-color" onclick="rbYourColor_selected(1)"></div>
+          <span class="tooltiptext">Play as white</span>
+        </div>
+        <div id="divYourColorBlack" class="your-color">
+          <div id="rectBlack" class="player-color" onclick="rbYourColor_selected(2)"></div>
+          <span class="tooltiptext">Play as black</span>
+        </div>
+      </div>
+      <div id="pnlGo">
+        <div>
+          <img src="./images/go.png" alt="Go" style="width:20%" onclick="btnGo_clicked()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="indicators">
+    <div id="opponent-type" class="indicators-column"> 
+        <span id="lblPlayerWhite" class="material-icons" onclick="showNewGameForm()">person</span>
+        <span id="lblVs" class="material-icons">compare_arrows</span>
+        <span id="lblPlayerBlack" class="material-icons" onclick="showNewGameForm()">computer</span>
+    </div>
+    <div id="messages" class="indicators-column">
+      Select color to start playing
+    </div>
+    <span id="player-to-move" class="material-icons indicators-column">flag</span>
+  </div>
+  
+  <div class="page-row">
+    <div id="game-management" class="column game-management-class">
+      <div id="game-management-state" class="game-management-section">
+        <button id="game-management-button-pause-resume" class="game-management-button" disabled onclick="pauseResume_clicked()">Pause</button>
+        <button id="game-management-button-cancel" class="game-management-button" disabled onclick="cancel_clicked()">Cancel</button>
+      </div>
+    </div>
+
+    <div id="play-board" class="column play-board-class">
+      <div id="row8" class="board-row">
+        <div id="a8" class="square" onclick="square_clicked('a', 8)"></div>
+        <div id="b8" class="square" onclick="square_clicked('b', 8)"></div>
+        <div id="c8" class="square" onclick="square_clicked('c', 8)"></div>
+        <div id="d8" class="square" onclick="square_clicked('d', 8)"></div>
+        <div id="e8" class="square" onclick="square_clicked('e', 8)"></div>
+        <div id="f8" class="square" onclick="square_clicked('f', 8)"></div>
+        <div id="g8" class="square" onclick="square_clicked('g', 8)"></div>
+        <div id="h8" class="square" onclick="square_clicked('h', 8)"></div>
+      </div>
+      <div id="row7" class="board-row">
+        <div id="a7" class="square" onclick="square_clicked('a', 7)"></div>
+        <div id="b7" class="square" onclick="square_clicked('b', 7)"></div>
+        <div id="c7" class="square" onclick="square_clicked('c', 7)"></div>
+        <div id="d7" class="square" onclick="square_clicked('d', 7)"></div>
+        <div id="e7" class="square" onclick="square_clicked('e', 7)"></div>
+        <div id="f7" class="square" onclick="square_clicked('f', 7)"></div>
+        <div id="g7" class="square" onclick="square_clicked('g', 7)"></div>
+        <div id="h7" class="square" onclick="square_clicked('h', 7)"></div>
+      </div>
+      <div id="row6" class="board-row">
+        <div id="a6" class="square" onclick="square_clicked('a', 6)"></div>
+        <div id="b6" class="square" onclick="square_clicked('b', 6)"></div>
+        <div id="c6" class="square" onclick="square_clicked('c', 6)"></div>
+        <div id="d6" class="square" onclick="square_clicked('d', 6)"></div>
+        <div id="e6" class="square" onclick="square_clicked('e', 6)"></div>
+        <div id="f6" class="square" onclick="square_clicked('f', 6)"></div>
+        <div id="g6" class="square" onclick="square_clicked('g', 6)"></div>
+        <div id="h6" class="square" onclick="square_clicked('h', 6)"></div>
+      </div>
+      <div id="row5" class="board-row">
+        <div id="a5" class="square" onclick="square_clicked('a', 5)"></div>
+        <div id="b5" class="square" onclick="square_clicked('b', 5)"></div>
+        <div id="c5" class="square" onclick="square_clicked('c', 5)"></div>
+        <div id="d5" class="square" onclick="square_clicked('d', 5)"></div>
+        <div id="e5" class="square" onclick="square_clicked('e', 5)"></div>
+        <div id="f5" class="square" onclick="square_clicked('f', 5)"></div>
+        <div id="g5" class="square" onclick="square_clicked('g', 5)"></div>
+        <div id="h5" class="square" onclick="square_clicked('h', 5)"></div>
+      </div>
+      <div id="row4" class="board-row">
+        <div id="a4" class="square" onclick="square_clicked('a', 4)"></div>
+        <div id="b4" class="square" onclick="square_clicked('b', 4)"></div>
+        <div id="c4" class="square" onclick="square_clicked('c', 4)"></div>
+        <div id="d4" class="square" onclick="square_clicked('d', 4)"></div>
+        <div id="e4" class="square" onclick="square_clicked('e', 4)"></div>
+        <div id="f4" class="square" onclick="square_clicked('f', 4)"></div>
+        <div id="g4" class="square" onclick="square_clicked('g', 4)"></div>
+        <div id="h4" class="square" onclick="square_clicked('h', 4)"></div>
+      </div>
+      <div id="row3" class="board-row">
+        <div id="a3" class="square" onclick="square_clicked('a', 3)"></div>
+        <div id="b3" class="square" onclick="square_clicked('b', 3)"></div>
+        <div id="c3" class="square" onclick="square_clicked('c', 3)"></div>
+        <div id="d3" class="square" onclick="square_clicked('d', 3)"></div>
+        <div id="e3" class="square" onclick="square_clicked('e', 3)"></div>
+        <div id="f3" class="square" onclick="square_clicked('f', 3)"></div>
+        <div id="g3" class="square" onclick="square_clicked('g', 3)"></div>
+        <div id="h3" class="square" onclick="square_clicked('h', 3)"></div>
+      </div>
+      <div id="row2" class="board-row">
+        <div id="a2" class="square" onclick="square_clicked('a', 2)"></div>
+        <div id="b2" class="square" onclick="square_clicked('b', 2)"></div>
+        <div id="c2" class="square" onclick="square_clicked('c', 2)"></div>
+        <div id="d2" class="square" onclick="square_clicked('d', 2)"></div>
+        <div id="e2" class="square" onclick="square_clicked('e', 2)"></div>
+        <div id="f2" class="square" onclick="square_clicked('f', 2)"></div>
+        <div id="g2" class="square" onclick="square_clicked('g', 2)"></div>
+        <div id="h2" class="square" onclick="square_clicked('h', 2)"></div>
+      </div>
+      <div id="row1" class="board-row">
+        <div id="a1" class="square" onclick="square_clicked('a', 1)"></div>
+        <div id="b1" class="square" onclick="square_clicked('b', 1)"></div>
+        <div id="c1" class="square" onclick="square_clicked('c', 1)"></div>
+        <div id="d1" class="square" onclick="square_clicked('d', 1)"></div>
+        <div id="e1" class="square" onclick="square_clicked('e', 1)"></div>
+        <div id="f1" class="square" onclick="square_clicked('f', 1)"></div>
+        <div id="g1" class="square" onclick="square_clicked('g', 1)"></div>
+        <div id="h1" class="square" onclick="square_clicked('h', 1)"></div>
+      </div>
+    </div>
+
+    <div id="score-sheet" class="column score-sheet-class">
+      <div id="score">*</div>
+      <div id="stone-count-panel">
+        <div id="stone-count-white" class="stone-count">2</div>
+        <div id="stone-count-black" class="stone-count">2</div>
+      </div>
+      <div id="move-list-panel">
+        <table id="move-list">
+          <tr>
+            <th id="header-move-no"></th>
+            <th id="header-move-w">W </th>
+            <th id="header-move-b">B </th>
+          </tr>
+          <tr>
+            <td class="move-no">1.</td>
+            <td id="move-w-1" class="move-w" onclick="scoreSheet_clicked(1)"></td>
+            <td id="move-b-1" class="move-b" onclick="scoreSheet_clicked(2)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">2.</td>
+            <td id="move-w-2" class="move-w" onclick="scoreSheet_clicked(3)"></td>
+            <td id="move-b-2" class="move-b" onclick="scoreSheet_clicked(4)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">3.</td>
+            <td id="move-w-3" class="move-w" onclick="scoreSheet_clicked(5)"></td>
+            <td id="move-b-3" class="move-b" onclick="scoreSheet_clicked(6)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">4.</td>
+            <td id="move-w-4" class="move-w" onclick="scoreSheet_clicked(7)"></td>
+            <td id="move-b-4" class="move-b" onclick="scoreSheet_clicked(8)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">5.</td>
+            <td id="move-w-5" class="move-w" onclick="scoreSheet_clicked(9)"></td>
+            <td id="move-b-5" class="move-b" onclick="scoreSheet_clicked(10)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">6.</td>
+            <td id="move-w-6" class="move-w" onclick="scoreSheet_clicked(11)"></td>
+            <td id="move-b-6" class="move-b" onclick="scoreSheet_clicked(12)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">7.</td>
+            <td id="move-w-7" class="move-w" onclick="scoreSheet_clicked(13)"></td>
+            <td id="move-b-7" class="move-b" onclick="scoreSheet_clicked(14)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">8.</td>
+            <td id="move-w-8" class="move-w" onclick="scoreSheet_clicked(15)"></td>
+            <td id="move-b-8" class="move-b" onclick="scoreSheet_clicked(16)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">9.</td>
+            <td id="move-w-9" class="move-w" onclick="scoreSheet_clicked(17)"></td>
+            <td id="move-b-9" class="move-b" onclick="scoreSheet_clicked(18)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">10.</td>
+            <td id="move-w-10" class="move-w" onclick="scoreSheet_clicked(19)"></td>
+            <td id="move-b-10" class="move-b" onclick="scoreSheet_clicked(20)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">11.</td>
+            <td id="move-w-11" class="move-w" onclick="scoreSheet_clicked(21)"></td>
+            <td id="move-b-11" class="move-b" onclick="scoreSheet_clicked(22)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">12.</td>
+            <td id="move-w-12" class="move-w" onclick="scoreSheet_clicked(23)"></td>
+            <td id="move-b-12" class="move-b" onclick="scoreSheet_clicked(24)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">13.</td>
+            <td id="move-w-13" class="move-w" onclick="scoreSheet_clicked(25)"></td>
+            <td id="move-b-13" class="move-b" onclick="scoreSheet_clicked(26)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">14.</td>
+            <td id="move-w-14" class="move-w" onclick="scoreSheet_clicked(27)"></td>
+            <td id="move-b-14" class="move-b" onclick="scoreSheet_clicked(28)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">15.</td>
+            <td id="move-w-15" class="move-w" onclick="scoreSheet_clicked(29)"></td>
+            <td id="move-b-15"class="move-b" onclick="scoreSheet_clicked(30)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">16.</td>
+            <td id="move-w-16" class="move-w" onclick="scoreSheet_clicked(31)"></td>
+            <td id="move-b-16" class="move-b" onclick="scoreSheet_clicked(32)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">17.</td>
+            <td id="move-w-17" class="move-w" onclick="scoreSheet_clicked(33)"></td>
+            <td id="move-b-17" class="move-b" onclick="scoreSheet_clicked(34)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">18.</td>
+            <td id="move-w-18" class="move-w" onclick="scoreSheet_clicked(35)"></td>
+            <td id="move-b-18" class="move-b" onclick="scoreSheet_clicked(36)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">19.</td>
+            <td id="move-w-19" class="move-w" onclick="scoreSheet_clicked(37)"></td>
+            <td id="move-b-19" class="move-b" onclick="scoreSheet_clicked(38)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">20.</td>
+            <td id="move-w-20" class="move-w" onclick="scoreSheet_clicked(39)"></td>
+            <td id="move-b-20" class="move-b" onclick="scoreSheet_clicked(40)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">21.</td>
+            <td id="move-w-21" class="move-w" onclick="scoreSheet_clicked(41)"></td>
+            <td id="move-b-21" class="move-b" onclick="scoreSheet_clicked(42)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">22.</td>
+            <td id="move-w-22" class="move-w" onclick="scoreSheet_clicked(43)"></td>
+            <td id="move-b-22" class="move-b" onclick="scoreSheet_clicked(44)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">23.</td>
+            <td id="move-w-23" class="move-w" onclick="scoreSheet_clicked(45)"></td>
+            <td id="move-b-23" class="move-b" onclick="scoreSheet_clicked(46)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">24.</td>
+            <td id="move-w-24" class="move-w" onclick="scoreSheet_clicked(47)"></td>
+            <td id="move-b-24" class="move-b" onclick="scoreSheet_clicked(48)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">25.</td>
+            <td id="move-w-25" class="move-w" onclick="scoreSheet_clicked(49)"></td>
+            <td id="move-b-25" class="move-b" onclick="scoreSheet_clicked(50)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">26.</td>
+            <td id="move-w-26" class="move-w" onclick="scoreSheet_clicked(51)"></td>
+            <td id="move-b-26" class="move-b" onclick="scoreSheet_clicked(52)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">27.</td>
+            <td id="move-w-27" class="move-w" onclick="scoreSheet_clicked(53)"></td>
+            <td id="move-b-27" class="move-b" onclick="scoreSheet_clicked(54)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">28.</td>
+            <td id="move-w-28" class="move-w" onclick="scoreSheet_clicked(55)"></td>
+            <td id="move-b-28" class="move-b" onclick="scoreSheet_clicked(56)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">29.</td>
+            <td id="move-w-29" class="move-w" onclick="scoreSheet_clicked(57)"></td>
+            <td id="move-b-29" class="move-b" onclick="scoreSheet_clicked(58)"></td>
+          </tr>
+          <tr>
+            <td class="move-no">30.</td>
+            <td id="move-w-30" class="move-w" onclick="scoreSheet_clicked(59)"></td>
+            <td id="move-b-30" class="move-b" onclick="scoreSheet_clicked(60)"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GMB_BG_COLOR = "#4CAF50";
+    const GMB_HOVER_COLOR = "DarkGreen";
+
+    const index2AlgebricNotationMap = ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1',
+      'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2',
+      'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3',
+      'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4',
+      'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5',
+      'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6',
+      'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7',
+      'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'];
+
+    const OPPONENT_KIND_ENGINE = 1;
+    const OPPONENT_KIND_PLAYER = 2;
+
+    const rbSelectedGraphic = "3px 6px 10px navy inset";
+    const rbUnselectedGraphic = "none";
+
+    const opponentKindEngineElement = document.getElementById("imgEngine");
+    const opponentKindPlayerElement = document.getElementById("imgPlayer");
+    const yourColorWhiteElement = document.getElementById("divYourColorWhite");
+    const yourColorBlackElement = document.getElementById("divYourColorBlack");
+    const lblPlayerWhiteElement = document.getElementById("lblPlayerWhite");
+    const lblPlayerBlackElement = document.getElementById("lblPlayerBlack");
+    const messagesElement = document.getElementById("messages");
+    const player2MoveElement = document.getElementById("player-to-move");
+    const gmbPause = document.getElementById("game-management-button-pause-resume");
+    const gmbCancel = document.getElementById("game-management-button-cancel");
+    const whiteStoneCountElement = document.getElementById("stone-count-white");
+    const blackStoneCountElement = document.getElementById("stone-count-black");
+    const moveListElement = document.getElementById("move-list");
+
+    let uiState = UI_STATE_GAME_TO_START;
+    //let winnerMsgBlinker;
+    let winnerMsgCount = 0;
+    let lastSheetCell = 0;
+
+    let newGameForm = { opponent: OPPONENT_KIND_ENGINE, yourColor: PLAYER_LIGHT };
+
+    let myColor = PLAYER_LIGHT;
+    let m_engineInfo = { engineColor: PLAYER_NONE, engine: null}; 
+    let m_oponent = OPPONENT_KIND_ENGINE;
+
+    let game = new Game();
+    currPosition = game.currentPosition;
+    game.start();
+    prevPosition = currPosition;
+    currPosition = game.currentPosition;
+    renderBoard();
+
+    function blinkWinner() {
+      if (UI_STATE_END_OF_GAME === uiState)
+      {
+        messagesElement.style.visibility = (messagesElement.style.visibility === 'hidden' ? 'visible' : 'hidden');
+      }
+    }
+
+    function enableGameManagementButton(btn, enable) {
+      if (true === enable) {
+        btn.disabled = false;
+        //btn.style.opacity = 1;
+        //btn.style.cursor = "pointer";
+      } else {
+        btn.disabled = true;
+        //btn.style.opacity = 0.8;
+        //btn.style.cursor = "not-allowed";
+      }
+    }
+
+    function enginePlaying()
+    {
+      if (game.currentPosition.turn === m_engineInfo.engineColor) {
+        let sqi = m_engineInfo.engine.calculate();
+        if (sqi >= 0) {
+          putStone(index2AlgebricNotationMap[sqi]);
+          if (GAME_STATUS_OVER === game.status) {
+            renderUI(getNextState(uiState, UI_OP_ENDED));
+          }
+        }
+      }
+    }
+
+    function putStone(squareByAlgebricNotation) {
+      let rv = false;
+
+      let newPosition = game.move(squareByAlgebricNotation);
+      if (newPosition !== null) {
+        rv = true;
+
+        prevPosition = currPosition;
+        currPosition = newPosition;
+
+        renderBoard();
+        setLastMoveIndication(false);
+        renderScoreSheet(squareByAlgebricNotation);
+      }
+
+      return rv;
+    }
+
+    function renderBoard() {
+      let sq = -1;
+      let prevStone = SQUARE_EMPTY;
+      let currStone = SQUARE_EMPTY;
+
+      for (i = 0; i < 64; i++) {
+        sq = index2AlgebricNotationMap[i];
+        prevStone = prevPosition.getSquareByAlgebricNotation(sq);
+        currStone = currPosition.getSquareByAlgebricNotation(sq);
+
+        if (currStone !== prevStone) {          
+          switch (currStone) {
+            case SQUARE_LIGHT:
+              document.getElementById(sq).style.background = "url(images/whitestone.png), linear-gradient(darkgreen, limegreen)";
+              document.getElementById(sq).style.backgroundSize = "cover";
+              document.getElementById(sq).style.backgroundRepeat = "no-repeat";
+              break;
+            case SQUARE_DARK:
+              document.getElementById(sq).style.background = "url(images/blackstone.png), linear-gradient(darkgreen, limegreen)";
+              document.getElementById(sq).style.backgroundSize = "cover";
+              document.getElementById(sq).style.backgroundRepeat = "no-repeat";
+              break;
+            default: //empty
+              document.getElementById(sq).style.background = ""; //"url(images/emptysquare.png)";
+              //document.getElementById(sq).style.backgroundSize = "cover";
+              //document.getElementById(sq).style.backgroundRepeat = "no-repeat";
+          }
+        }
+      }
+
+      setPlayerToMoveIndication();
+    }
+
+    function renderScoreSheet(move) {
+      let moveNum;
+      let score;
+
+      whiteStoneCountElement.innerHTML = currPosition.lightStonesCount;
+      blackStoneCountElement.innerHTML = currPosition.darkStonesCount;
+
+      moveNum = Math.ceil((game.positions.length - 1) / 2);
+      renderScoreSheetCell(game.currentPosition.turn === PLAYER_LIGHT ?
+        PLAYER_DARK : PLAYER_LIGHT,
+        moveNum, move);
+
+      if (GAME_STATUS_OVER === game.status) {
+        let result = game.result;
+        if (GAME_SCORE_WIN_LIGHT === result) {
+          score = '1 - 0';
+        } else if (GAME_SCORE_DRAW === result) {
+          score = '1/2 -  1/2';
+        } else {
+          score = '0 - 1';
+          messagesElement.style.color = 'black';
+        }
+        document.getElementById("score").innerHTML = score;
+      }
+    }
+
+    function renderScoreSheetCell(turn, num, move) {
+      let sheetCellId;
+      let sheetCellElem;
+
+      sheetCellId = 'move-w-';
+      if (PLAYER_DARK === turn) {
+        sheetCellId = 'move-b-';
+      }
+      sheetCellId += num;
+      sheetCellElem = document.getElementById(sheetCellId);
+
+      sheetCellElem.innerHTML = move;
+
+      if ('' !== move) {
+        if (!isElementInViewport(document.getElementById("move-list-panel"), sheetCellElem)) {
+          sheetCellElem.scrollIntoView(true);
+        }
+      }
+    }
+
+    function renderScoreSheetCellPlayback(selectedCell) {
+      let row = -1;
+      let col = -1;
+
+      if (0 !== lastSheetCell) {
+        row = Math.floor((lastSheetCell - 1) / 2);
+        col = (lastSheetCell - 1) % 2;
+        moveListElement.rows[row+1].cells[col + 1].style.backgroundColor = '';
+      }
+      
+      if (selectedCell > 0) {
+        row = Math.floor((selectedCell - 1) / 2);
+        col = (selectedCell - 1) % 2;
+        moveListElement.rows[row+1].cells[col + 1].style.backgroundColor = 'dodgerblue';        
+      }
+
+      lastSheetCell = selectedCell;
+    }
+
+    function renderUI(newUIState)
+    {
+      if (uiState !== newUIState)
+      {
+        uiState = newUIState;
+
+        switch (uiState) {
+          case UI_STATE_GAME_TO_START:
+                 //The UI state at startup is dectated by the HTML
+            break;
+          case UI_STATE_CANCELED:
+            lblPlayerWhiteElement.style.cursor = 'pointer';
+            lblPlayerBlackElement.style.cursor = 'pointer';
+
+            messagesElement.innerHTML = "Choose color to play a new game";
+
+            player2MoveElement.style.visibility = "hidden";
+
+            gmbPause.innerHTML = "Pause";
+
+            enableGameManagementButton(gmbPause, false);
+            enableGameManagementButton(gmbCancel, false);
+            break;
+          case UI_STATE_END_OF_GAME:
+            lblPlayerWhiteElement.style.cursor = 'pointer';
+            lblPlayerBlackElement.style.cursor = 'pointer';
+
+            player2MoveElement.style.visibility = "hidden";
+
+            gmbPause.innerHTML = "Pause";
+
+            enableGameManagementButton(gmbPause, false);
+            enableGameManagementButton(gmbCancel, false);
+
+            showWinnerMessage();
+            break;
+          case UI_STATE_PLAYING:
+            lblPlayerWhiteElement.style.cursor = 'auto';
+            lblPlayerBlackElement.style.cursor = 'auto';
+
+            if (OPPONENT_KIND_ENGINE === m_oponent) {
+              lblPlayerWhiteElement.innerHTML = (PLAYER_LIGHT === myColor) ? 'person' : 'computer';
+              lblPlayerBlackElement.innerHTML = (PLAYER_LIGHT === myColor) ? 'computer' : 'person';
+            } else {
+              lblPlayerWhiteElement.innerHTML = (PLAYER_LIGHT === myColor) ? 'person' : 'person_add';
+              lblPlayerBlackElement.innerHTML = (PLAYER_LIGHT === myColor) ? 'person_add' : 'person';
+            }
+            
+            messagesElement.innerHTML = "";
+
+            player2MoveElement.style.visibility = "visible";
+
+            gmbPause.innerHTML = "Pause";
+
+            enableGameManagementButton(gmbPause, true);
+            enableGameManagementButton(gmbCancel, true);
+            break;
+          case UI_STATE_PAUSE:
+            lblPlayerWhiteElement.style.cursor = 'auto';
+            lblPlayerBlackElement.style.cursor = 'auto';
+
+            messagesElement.innerHTML = "Click resume to continue";
+
+            player2MoveElement.style.visibility = "visible";
+
+            gmbPause.innerHTML = "Resume";
+
+            enableGameManagementButton(gmbPause, true);
+            enableGameManagementButton(gmbCancel, true);
+            break;
+          default:
+            break;
+        }
+
+      }
+    }
+
+    function resetScoreSheet() {
+      document.getElementById("score").innerHTML = '*';
+
+      whiteStoneCountElement.innerHTML = 2;
+      blackStoneCountElement.innerHTML = 2;
+
+      renderScoreSheetCellPlayback(0);
+      let i;
+      for (i = 1; i <= 30; i++) {
+        renderScoreSheetCell(PLAYER_LIGHT, i, '');
+        renderScoreSheetCell(PLAYER_DARK, i, '');
+      }
+    }
+
+    function setLastMoveIndication(clear) {
+      const sqBorder = '1px inset #3CB371';
+      let sq;
+      let moveCount = 0;
+
+      moveCount = game.moves.length;
+      if (moveCount > 0) {
+        if (clear) {
+          sq = game.moves[moveCount - 1];
+          document.getElementById(sq).style.border = sqBorder;
+        } else {
+          if (moveCount > 1) {
+            sq = game.moves[moveCount - 2];
+            document.getElementById(sq).style.border = sqBorder;
+          }
+          sq = game.moves[moveCount - 1];
+          document.getElementById(sq).style.border = '1px inset yellow';
+        }
+      }
+    }
+
+    function setPlayerToMoveIndication() {
+      let ptmElement = null;
+
+      ptmElement = document.getElementById("player-to-move");
+
+      if (game.status === GAME_STATUS_ON) {
+        if (game.currentPosition.turn === PLAYER_LIGHT) {
+          ptmElement.style.color = "white";
+          ptmElement.style.padding = "2px";
+          ptmElement.style.border = "2px solid white";
+          ptmElement.style.borderRadius = "50%";
+        } else if (game.currentPosition.turn === PLAYER_DARK) {
+          ptmElement.style.color = "black";
+          ptmElement.style.padding = "2px";
+          ptmElement.style.border = "2px solid black";
+          ptmElement.style.borderRadius = "50%";
+        }
+      } 
+    }
+
+    function showWinnerMessage() {
+      if (GAME_STATUS_OVER === game.status &&
+        UI_STATE_END_OF_GAME === uiState) {
+
+        let result = game.result;
+        if (GAME_SCORE_WIN_LIGHT === result) {
+          messagesElement.innerHTML = 'White wins!';
+        } else if (GAME_SCORE_DRAW === result) {
+          messagesElement.innerHTML = 'Draw';
+        } else {
+          messagesElement.innerHTML = 'Black wins!';
+          messagesElement.style.color = 'black';
+        }
+
+        window.setTimeout(blinkWinner, 750);
+        window.setTimeout(blinkWinner, 2 * 750);
+        window.setTimeout(blinkWinner, 3 * 750);
+        window.setTimeout(blinkWinner, 4 * 750);
+        window.setTimeout(blinkWinner, 5 * 750);
+        window.setTimeout(blinkWinner, 6 * 750);
+
+        window.setTimeout(function () {
+          messagesElement.style.color = 'white';
+          messagesElement.style.visibility = 'visible';
+          messagesElement.innerHTML = 'Choose color to play again';
+        }, 7 * 750);
+      }
+    }
+
+    // *** Document events handlers ***
+    function cancel_clicked() {
+      renderUI(getNextState(uiState, UI_OP_CANCEL));
+    }
+
+    function startNewGame(playerColor) {
+      myColor = playerColor;
+      if (OPPONENT_KIND_ENGINE === m_oponent) {
+        m_engineInfo.engineColor = myColor === PLAYER_LIGHT ?
+          PLAYER_DARK :
+          PLAYER_LIGHT;
+      }
+
+      setLastMoveIndication(true);
+       
+      if (UI_STATE_CANCELED === uiState || UI_STATE_END_OF_GAME === uiState) {
+        prevPosition = currPosition;
+        game = new Game();
+        game.start();
+        currPosition = game.currentPosition;
+        renderBoard();
+        resetScoreSheet();
+      }
+      if (OPPONENT_KIND_ENGINE === m_oponent) {
+        m_engineInfo.engine = new Rivery(game, m_engineInfo.engineColor);
+      } else {
+        m_engineInfo.engine = null;
+      }
+      
+      renderUI(getNextState(uiState, UI_OP_PLAY));
+
+      if (OPPONENT_KIND_ENGINE === m_oponent) {
+        if (PLAYER_LIGHT === m_engineInfo.engineColor) {
+          enginePlaying();
+        }
+      }
+    } 
+
+    function setOpponentOption(opponent) {
+      if (OPPONENT_KIND_ENGINE === opponent) {
+        m_oponent = OPPONENT_KIND_ENGINE;
+      } else if (OPPONENT_KIND_PLAYER === opponent) {
+        m_oponent = OPPONENT_KIND_PLAYER;
+        m_engineInfo.engineColor = PLAYER_NONE;
+      }
+    }
+
+    function pauseResume_clicked()
+    {
+      if (UI_STATE_PLAYING === uiState) {
+        renderUI(getNextState(uiState, UI_OP_PAUSE));
+      } else if (UI_STATE_PAUSE === uiState) {
+        renderUI(getNextState(uiState, UI_OP_RESUME));
+      }
+    }
+
+    function square_clicked(file, row) {
+      if (UI_STATE_PLAYING === uiState) {
+        if (OPPONENT_KIND_PLAYER === m_oponent ||
+          (OPPONENT_KIND_ENGINE === m_oponent && game.currentPosition.turn !== m_engineInfo.engineColor)) {
+          if (putStone(file + row)) {
+            if (GAME_STATUS_OVER === game.status) {
+              renderUI(getNextState(uiState, UI_OP_ENDED));
+            } else if (OPPONENT_KIND_ENGINE === m_oponent) {
+              window.setTimeout(enginePlaying, 1000);
+            }
+          }
+        }
+      }
+    }
+
+    function scoreSheet_clicked(celli) {
+      if (UI_STATE_CANCELED === uiState ||
+         UI_STATE_END_OF_GAME === uiState) {
+        if (celli < game.positions.length) {
+          setLastMoveIndication(true);
+
+          prevPosition = currPosition;
+          currPosition = game.positions[celli];
+
+          renderScoreSheetCellPlayback(celli);
+          renderBoard();
+        }
+      }
+    }
+
+      //New game form
+    let frmNewGameElem = document.getElementById('frm-new-game-back');
+
+    function btnCloseFrm_clicked() {
+      frmNewGameElem.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      if (frmNewGameElem == event.target) {
+        btnCloseFrm_clicked();
+      }
+    }
+
+    function rbOpponentKind_selected(option) {
+      newGameForm.opponent = option;
+
+      if (OPPONENT_KIND_ENGINE === newGameForm.opponent) {
+        opponentKindEngineElement.style.boxShadow = rbSelectedGraphic;
+        opponentKindPlayerElement.style.boxShadow = rbUnselectedGraphic;
+      } else {
+        opponentKindEngineElement.style.boxShadow = rbUnselectedGraphic;
+        opponentKindPlayerElement.style.boxShadow = rbSelectedGraphic;
+      }
+    }
+
+    function rbYourColor_selected(option) {
+      newGameForm.yourColor = option;
+
+      if (PLAYER_LIGHT === newGameForm.yourColor) {
+        yourColorWhiteElement.style.boxShadow = rbSelectedGraphic;
+        yourColorBlackElement.style.boxShadow = rbUnselectedGraphic;
+      } else {
+        yourColorWhiteElement.style.boxShadow = rbUnselectedGraphic;
+        yourColorBlackElement.style.boxShadow = rbSelectedGraphic;
+      }
+    }
+
+    function btnGo_clicked() {
+      btnCloseFrm_clicked();
+
+      setOpponentOption(newGameForm.opponent);
+      startNewGame(newGameForm.yourColor);
+    }
+
+    function showNewGameForm() {
+      if (UI_STATE_CANCELED === uiState ||
+        UI_STATE_END_OF_GAME === uiState ||
+        UI_STATE_GAME_TO_START === uiState) {
+        frmNewGameElem.style.display = "block";
+      }      
+    }
+
+  </script>
+</body>
+</html>

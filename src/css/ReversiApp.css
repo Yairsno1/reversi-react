@@ -1,0 +1,335 @@
+* {
+  box-sizing: border-box;
+}
+
+.page-row {
+}
+
+#indicators {
+  position: relative;
+  padding: 0.5% 2%;
+  background-color: dodgerblue;
+}
+
+.indicators-column {
+  display: inline-block;
+}
+
+#opponent-type {
+  position: relative;
+}
+
+#lblPlayerWhite, #lblVs, #lblPlayerBlack {
+  font-size: 200%;
+}
+
+#lblPlayerWhite {
+  color: white;
+  cursor: pointer;
+}
+
+#lblVs {
+  color: #4CAF50;
+}
+
+#lblPlayerBlack {
+  color: Black;
+  cursor: pointer;
+}
+
+#messages {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 70%;
+  margin-left: 2%;
+  font-size: 125%;
+  color: white;
+}
+
+#player-to-move {
+  line-height: inherit;
+  visibility: hidden;
+  position: absolute;
+  right: 5%;
+}
+
+.column {
+  float: left;
+  padding: 10px;
+}
+
+  .column.game-management-class {
+      width: 12%;
+      margin-right: 10%;
+  }
+
+#game-management-state {
+  margin-top: 2%;
+}
+
+.game-management-button {
+  display: block;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 8% 4%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 100%;
+  width: 100%;
+  opacity: 1;
+  cursor: pointer;
+}
+
+  .game-management-button:disabled {
+      opacity: 0.80;
+      cursor: not-allowed;
+  }
+
+  .game-management-button:hover:enabled {
+      background-color: darkgreen;
+  }
+
+#game-management-button-cancel {
+  margin-top: 8%;
+}
+
+.column.play-board-class {
+  width: 38%;
+}
+
+.column.score-sheet-class {
+  margin-left: 10%;
+  width: 12.5%;
+}
+
+/* Clear floats after the columns */
+.page-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.board-row {
+  position: relative;
+}
+
+  .board-row::after {
+      content: "";
+      clear: both;
+      display: table;
+  }
+
+.square {
+  float: left;
+  width: 12.5%;
+  padding-bottom: 12.5%;
+  border: 1px inset #3CB371;
+  background: -webkit-linear-gradient(darkgreen, limegreen); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(darkgreen, limegreen); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(darkgreen, limegreen); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(darkgreen, limegreen); /*url(../images/emptysquare.png);*/
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+
+#score-sheet {
+
+}
+
+#score {
+  font-size: 200%;
+  margin-left: 10%;
+}
+
+#stone-count-panel {
+  margin-left: 10%;
+}
+
+.stone-count {
+  float: left;
+  margin: 0;
+  padding: 3px 6px;
+  font-size: 200%;
+  background-color: dodgerblue;
+}
+
+#stone-count-white {
+  color: white;
+}
+
+#stone-count-black {
+  color: black;
+}
+
+#stone-count-panel:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#move-list-panel {
+  height: 450px;
+  margin-top: 1%;
+  overflow: auto;
+}
+
+#move-list {
+
+}
+
+.move-w, .move-b {
+  border-bottom: 1px solid black;
+  width: 36px;
+  padding: 1px 1px;
+  color: blue;
+  text-align: center;
+  font-family: 'Freestyle Script' /*Lucida Handwriting'*/, sans-serif;
+  font-size: 150%; /*for font Freestyle Script*/
+}
+
+.move-w:hover, .move-b:hover {
+  background-color : #e0e0e0;
+}
+
+@media only screen and (max-width: 960px) {
+ .column.game-management-class {
+     float: none;
+     display: block;
+     width: 100%;
+     margin-right: 1%;
+     padding: 6px 10px;
+  }
+
+  .game-management-section {
+      display: inline-block;
+      width: 40%;
+  }
+
+  #game-management-state {
+      margin-top : 0;
+  }
+
+  .game-management-button {
+      display: inline-block;
+      padding: 8px 4px;
+      width: 45%;
+  }
+
+  #game-management-button-pause-resume {
+      margin-top: 0;
+  }
+
+  #game-management-button-cancel {
+      margin-top: 0;
+      margin-left: 4px;
+  }
+
+  .column.play-board-class {
+      width: 60%;
+  }
+
+  .column.score-sheet-class {
+      width: 25%;
+  }
+}
+
+@media only screen and (max-width: 560px) {
+  #indicators {
+      padding: 5px 6px;
+  }
+
+  #lblPlayerWhite, #lblVs, #lblPlayerBlack {
+      font-size: 125%;
+  }
+
+  #messages {
+      font-size: 90%;
+  }
+
+  #player-to-move {
+      line-height: normal;
+      font-size: 100%;
+      right: 5px;
+  }
+
+  .column {
+      float: none;
+  }
+
+  .column.game-management-class {
+      padding: 3px 10px;
+  }
+
+  .game-management-section {
+      display: block;
+      width: 100%;
+  }
+
+  #game-management-state {
+      margin-top: 6px;
+  }
+
+  .game-management-button {
+      display: inline-block;
+      padding: 4px 2px;
+      width: 45%;
+      font-size: 90%;
+  }
+
+  .column.play-board-class {
+      width: 100%;
+  }
+
+  .column.score-sheet-class {
+      margin-left: 0;
+      width: 100%;
+  }
+
+  #score {
+      display: inline-block;
+      margin-top: 0;
+      margin-left: 0;
+      font-size: 150%;
+  }
+
+  #stone-count-panel {
+      display: inline-block;
+      margin-left: 0;
+  }
+
+  .stone-count {
+      padding: 1px 3px;
+      font-size: 100%;
+  }
+
+  #score-sheet {
+  }
+
+  #move-list-panel {
+      margin-top: 0;
+      height: auto;
+  }
+
+  #move-list {
+    white-space: nowrap;
+  }
+
+      #move-list tr {
+          float: left;
+
+      }
+
+      #move-list th {
+          display: none;
+      }
+
+  .move-w, .move-b {
+      border-bottom: none;
+      width: 18px;
+      font-size: 100%;
+  }
+
+}

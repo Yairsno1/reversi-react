@@ -1,0 +1,208 @@
+﻿
+* {
+    box-sizing: border-box;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.7);
+}
+
+#pnl-new-game {
+    background-color: dodgerblue;
+    margin: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 50%;
+}
+
+/* The Close Button */
+#btn-close-frm {
+    display: block;  
+    color: #aaaaaa;
+    float:right;
+    line-height: inherit;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#btn-close-frm:hover,
+#btn-close-frm:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    #btn-close-frm::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+#pnlOpponentKind {
+    position: relative;
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 1%;
+}
+
+.opponent-kind {
+    display: inline-block;
+    width: 49%;
+}
+
+    .opponent-kind img {
+        display: block;
+        position: relative;
+        margin: 0 auto;
+        padding: 3%;
+        cursor: pointer;
+    }
+
+#imgEngine {
+    box-shadow: 3px 6px 10px navy inset;
+}
+
+#pnlYourColor {
+    margin-top: 2%;
+}
+
+.select-label {
+    text-align: center;
+    color: white;
+    font-size: 125%;
+}
+
+.your-color {
+    position: relative;
+    margin: 2% 35%;
+    padding: 1% 2%;
+    cursor: pointer;
+}
+
+#divYourColorWhite {
+    box-shadow: 3px 6px 10px navy inset;
+}
+
+.player-color {
+    width: 100%;
+    padding-bottom: 25%;
+}
+
+#rectWhite {
+    background-color: white;
+}
+
+#rectBlack {
+    background-color: black;
+}
+
+.opponent-kind img:hover, .your-color:hover .player-color {
+    opacity: 0.63;
+}
+
+    #pnlGo div {
+        width: 50%;
+        margin: 0 auto;
+    }
+
+        #pnlGo div img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #pnlGo div img:hover {
+            cursor: pointer;
+        }
+
+
+.opponent-kind .tooltiptext, .your-color .tooltiptext {
+    visibility: hidden;
+    width: 180px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 3px 0;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    /* margin-left: -60px; Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+.your-color .tooltiptext {
+    width: 100px;
+    top: 30%;
+    right: 95%;
+}
+
+    .opponent-kind .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%; /* At the top of the tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent #4CAF50 transparent;
+    }
+
+.your-color .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 100%; /* To the right of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent #4CAF50;
+}
+
+.opponent-kind:hover .tooltiptext, .your-color:hover .tooltiptext {
+    visibility: visible;
+}
+
+.your-color:hover .tooltiptext {
+    opacity: 1;
+}
+
+@media only screen and (max-width: 960px) {
+    #pnl-new-game {
+        width: 70%;
+    }
+
+    #btn-close-frm {
+        font-size: 24px;
+    }
+
+    .select-label {
+        font-size: 110%;
+    }
+}
+
+ @media only screen and (max-width: 560px) {
+    #pnl-new-game {
+        width: 90%;
+    }
+
+    #btn-close-frm {
+        font-size: 20px;
+    }
+
+    .opponent-kind {
+        width: 45%;
+    }
+
+    .select-label {
+        font-size: 100%;
+    }
+
+}
