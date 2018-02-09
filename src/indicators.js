@@ -1,56 +1,95 @@
 import './css/ReversiApp.css';
 import React, { Component } from 'react';
 import * as APP_CONST from './appConst';
-import {PLAYER_LIGHT} from './model/position';
+import {PLAYER_LIGHT, PLAYER_DARK} from './model/position';
 import * as GAME_CONST from './model/game';
+//-------------------
+import IconIndicator from './comps/iconIndicator';
+import {withColorIcon, withClickIcon} from './comps/decoratedIcon';
+//-------------------
 
-function OpponentType(props)
+const WhiteIcon = withColorIcon(IconIndicator, 'white');
+const BlackIcon = withColorIcon(IconIndicator, 'black');
+
+const playerPerson = 'person';
+const playerComputer = 'computer';
+const playerOpponentPerson = 'person_add';
+
+class OpponentType extends Component
 {
-  const playerPerson = 'person';
-  const playerComputer = 'computer';
-  const playerOpponentPerson = 'person_add';
+  constructor(props) {
+    super(props);
 
-  let cursor = 'pointer';
-  let whitePlayerKind = playerPerson;
-  let blackPlayerKind = playerComputer;
-
-  if (APP_CONST.OPPONENT_KIND_ENGINE === props.opponentKind) {
-    whitePlayerKind = (PLAYER_LIGHT === props.myColor) ? playerPerson : playerComputer;
-    blackPlayerKind = (PLAYER_LIGHT === props.myColor) ? playerComputer : playerPerson;
-  } else {
-    whitePlayerKind = (PLAYER_LIGHT === props.myColor) ? playerPerson : playerOpponentPerson;
-    blackPlayerKind = (PLAYER_LIGHT === props.myColor) ? playerOpponentPerson : playerPerson;
+    this.whitePlayerElement = this.PlayerElementFactory(PLAYER_LIGHT);
+    this.blackPlayerElement = this.PlayerElementFactory(PLAYER_DARK);
   }
 
-  switch (props.uiState) {
-    case APP_CONST.UI_STATE_GAME_TO_START:
-    //The UI state at startup is dictated by the HTML/CSS
-      break;
-    case APP_CONST.UI_STATE_CANCELED:
-      break;
-    case APP_CONST.UI_STATE_END_OF_GAME:
-      break;
-    case APP_CONST.UI_STATE_PLAYING:
-      cursor = 'auto';
-      break;
-    case APP_CONST.UI_STATE_PAUSE:
-      cursor = 'auto';
-      break;
-    default:
-      break;
+  CalculatePlayerIconText(playerColor) {
+    let rv = '';
+
+    if (APP_CONST.OPPONENT_KIND_ENGINE === this.props.opponentKind) {
+      rv = (playerColor === this.props.myColor) ? playerPerson : playerComputer;
+    } else {
+      rv = (playerColor === this.props.myColor) ? playerPerson : playerOpponentPerson;
+    }
+
+    return rv;
   }
 
-  const playerKindStyle = {
-    cursor: cursor,
-  };
+  IsEnabled() {
+    let rv = true;
 
-  return (
-    <div id={'opponent-type'} className={'indicators-column'}>
-      <span id={'lblPlayerWhite'} className={'material-icons'} style={playerKindStyle} onClick={props.onOpponentTypeClick}>{whitePlayerKind}</span>
-      <span id={'lblVs'} className={'material-icons'}>compare_arrows</span>
-      <span id={'lblPlayerBlack'} className={'material-icons'} style={playerKindStyle} onClick={props.onOpponentTypeClick}>{blackPlayerKind}</span>
-    </div>
-  );
+    switch (this.props.uiState) {
+      case APP_CONST.UI_STATE_GAME_TO_START:
+        break;
+      case APP_CONST.UI_STATE_CANCELED:
+        break;
+      case APP_CONST.UI_STATE_END_OF_GAME:
+        break;
+      case APP_CONST.UI_STATE_PLAYING:
+        rv = false;
+        break;
+      case APP_CONST.UI_STATE_PAUSE:
+        rv = false;
+        break;
+      default:
+        rv = false;
+        break;
+    }
+
+    return rv;
+  }
+
+  PlayerElementFactory(playerColor) {
+    let rv = undefined;
+
+    const baseElem = (PLAYER_LIGHT === playerColor) ? WhiteIcon : BlackIcon;
+    rv = withClickIcon(baseElem, this.IsEnabled(), this.props.onOpponentTypeClick);
+
+    return rv;
+  }
+
+  render () {
+    const whitePlayer = this.CalculatePlayerIconText(PLAYER_LIGHT);
+    const blackPlayer = this.CalculatePlayerIconText(PLAYER_DARK);
+    const enabled = this.IsEnabled();
+
+    return (
+      <div id={'opponent-type'} className={'indicators-column'}>
+        <this.whitePlayerElement
+          elementId={'lblPlayerWhite'}
+          elementClass={'material-icons'}
+          enabled={enabled}
+          text={whitePlayer}/>
+        <span id={'lblVs'} className={'material-icons'}>compare_arrows</span>
+        <this.blackPlayerElement
+          elementId={'lblPlayerBlack'}
+          elementClass={'material-icons'}
+          enabled={enabled}
+          text={blackPlayer}/>
+      </div>
+    );
+  }
 }
 
 function Message(props) {
@@ -95,9 +134,9 @@ function Message(props) {
   };
 
   return (
-      <div id='messages' className='indicators-column' style={textStyle}>
-        {text}
-      </div>
+    <div id='messages' className='indicators-column' style={textStyle}>
+      {text}
+    </div>
   );
 }
 
