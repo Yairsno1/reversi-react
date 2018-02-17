@@ -4,12 +4,23 @@ import React, { Component } from 'react';
 import * as APP_CONST from './appConst';
 import Game, * as GAME_CONST from './model/game';
 import /*Position,*/ {PLAYER_LIGHT, PLAYER_DARK} from './model/position';
-import Indicators from './indicators.js';
-import GameManagement from './gameManagement';
-import Board from './board';
-import ScoreSheet from './scoreSheet';
-import NewGameForm from './newGameForm';
+
 import Reveri from './model/reveri';
+
+import IndicatorsContainer from './containers/indicatorsContainer';
+import GameManagementContainer from './containers/gameManagementContainer';
+import BoardContainer from './containers/boardContainer';
+import ScoreSheetContainer from './containers/scoreSheetContainer';
+import NewGameFormContainer from './containers/newGameFormContainer';
+
+import { showNewGameFormAction,
+  newGameAction,
+  playerMovedAction,
+  gameOverAction,
+  gameCanceledAction,
+  gamePausedResumedAction,
+  winnerMessageAction,
+  replayAction } from './actions';
 
 class ReversiApp extends Component {
   constructor(props) {
@@ -24,50 +35,19 @@ class ReversiApp extends Component {
     this.handleEngineMove = this.handleEngineMove.bind(this);
     this.handleSheetCellClick = this.handleSheetCellClick.bind(this);
 
-    const game = new Game();
-    game.start();
-    //We store the viewed position separate from the game because it
-    //has one of two sources, the active game or from post-game replay.
-    const pos = game.currentPosition.clone(); //Copy of the position, view-only.
-    const uiState = APP_CONST.UI_STATE_GAME_TO_START;
-    const myColor = PLAYER_LIGHT;
-    const opponentKind = APP_CONST.OPPONENT_KIND_ENGINE;
-
     this.engine = null;
     this.blinkArgs = {Id: -1, count: 0};
-
-    this.state = ({
-      game: game,
-      position: {position: pos, currMove: ''},
-      uiState: uiState,
-      opponentKind: opponentKind,
-      myColor: myColor,
-      showNewGameForm: false,
-      blinkWinnerMessage: {active: false, visible: false, winner: GAME_CONST.GAME_SCORE_NA},
-    });
   }
 
-  playerMoved(move, pos) {
-    const uiState = this.state.uiState;
-    let nextStateObj = null;
-    let blinkWinMsg = null;
+  playerMoved(dispatch, move, pos) {
+    dispatch(playerMovedAction(move, pos));
 
-    nextStateObj = {position: {position: pos, currMove: move, },};
+    const game = this.props.store.getState().game;
+    if (GAME_CONST.GAME_STATUS_OVER === game.status) {
+      this.blinkArgs.Id = setInterval(() => {this.handleWinnerBlink(dispatch);}, 750);
 
-    if (GAME_CONST.GAME_STATUS_OVER === this.state.game.status) {
-      blinkWinMsg = {active: false, visible: false, winner: GAME_CONST.GAME_SCORE_NA};
-
-      this.blinkArgs.Id = setInterval(() => this.handleWinnerBlink(), 750);
-
-      nextStateObj.uiState = APP_CONST.getUINextState(uiState, APP_CONST.UI_OP_ENDED);
-
-      blinkWinMsg.active = true;
-      blinkWinMsg.visible = true;
-      blinkWinMsg.winner = this.state.game.result;
-      nextStateObj.blinkWinnerMessage = blinkWinMsg
+      dispatch(gameOverAction(game.result));
     }
-
-    this.setState(nextStateObj);
   }
 
   tryMove(squareByAlgebricNotation) {
@@ -77,7 +57,7 @@ class ReversiApp extends Component {
     //is on the callers.
     let rv = null;
 
-    const newPosition = this.state.game.move(squareByAlgebricNotation);
+    const newPosition = this.props.store.getState().game.move(squareByAlgebricNotation);
     if (null !== newPosition) {
       rv = newPosition.clone();
     }
@@ -89,58 +69,51 @@ class ReversiApp extends Component {
   //Todo: Migrate to Redux
 
   //=== New Game Form ===
-  handleNewGameFormClose() {
-    this.setState({showNewGameForm: false});
+  handleNewGameFormClose(dispatch) {
+    dispatch(showNewGameFormAction(false));
   }
 
-  handleNewGameFormGo(whichOpponent, whichColor) {
-    this.handleNewGameFormClose();
+  handleNewGameFormGo(dispatch, whichOpponent, whichColor) {
+    dispatch(showNewGameFormAction(false));
 
-    const prevUIState = this.state.uiState;
-    const nextUIState = APP_CONST.getUINextState(this.state.uiState, APP_CONST.UI_OP_PLAY);
-    const isEngineOpponent = APP_CONST.OPPONENT_KIND_ENGINE === whichOpponent;
+    const prevState = this.props.store.getState();
 
-    let game = this.state.game;
-    let pos = this.state.position.position;
+    const prevUIState = prevState.uiState;
+
+    let game = prevState.game;
     if (APP_CONST.UI_STATE_CANCELED === prevUIState ||
       APP_CONST.UI_STATE_END_OF_GAME === prevUIState) {
         game = new Game();
         game.start();
-        pos = game.currentPosition.clone();
-
     }
-    if (isEngineOpponent) {
+    dispatch(newGameAction(game, whichOpponent, whichColor));
+
+    if (APP_CONST.OPPONENT_KIND_ENGINE === whichOpponent) {
       this.engine = new Reveri(game, PLAYER_LIGHT === whichColor ? PLAYER_DARK : PLAYER_LIGHT);
-    }
 
-    this.setState({
-      game: game,
-      position: {position: pos, currMove: '', },
-      uiState: nextUIState,
-      opponentKind: whichOpponent,
-      myColor: whichColor,
-    });
-
-    if (isEngineOpponent && PLAYER_DARK === whichColor) {
-      setTimeout(this.handleEngineMove, 1000);
+      if (PLAYER_DARK === whichColor) {
+        setTimeout(() => {this.handleEngineMove(dispatch);}, 1000);
+      }
     }
   }
 
   //=== Indicators ===
-  handleNewGameFormShow() {
-    const uiState = this.state.uiState;
+  handleNewGameFormShow(dispatch) {
+    const uiState = this.props.store.getState().uiState;
 
-    if (APP_CONST.UI_STATE_CANCELED === uiState ||
+    if ((APP_CONST.UI_STATE_CANCELED === uiState ||
       APP_CONST.UI_STATE_END_OF_GAME === uiState ||
-      APP_CONST.UI_STATE_GAME_TO_START === uiState) {
-        this.setState({showNewGameForm: true});
+      APP_CONST.UI_STATE_GAME_TO_START === uiState)) {
+        dispatch(showNewGameFormAction(true));
       }
   }
 
-  handleWinnerBlink() {
+  handleWinnerBlink(dispatch) {
     const maxCount = 6;
 
-    if (APP_CONST.UI_STATE_END_OF_GAME === this.state.uiState) {
+    const currState = this.props.store.getState();
+
+    if (APP_CONST.UI_STATE_END_OF_GAME === currState.uiState) {
       this.blinkArgs.count = this.blinkArgs.count + 1;
       if (maxCount === this.blinkArgs.count) {
         clearInterval(this.blinkArgs.Id);
@@ -148,77 +121,74 @@ class ReversiApp extends Component {
         this.blinkArgs.count = 0;
       }
 
-      this.setState(function(prevState, props) {
-        return {blinkWinnerMessage: {
-          active: this.blinkArgs.count > 0,
-          visible: !prevState.blinkWinnerMessage.visible,
-          winner: prevState.game.result},
-        };
-      });
+      dispatch(winnerMessageAction(
+        this.blinkArgs.count > 0,
+        currState.game.result));
     }
 
   }
 
   //=== Game management ===
-  handlePuaseResume() {
-    const currUIState = this.state.uiState;
+  handlePuaseResume(dispatch) {
+    const currUIState = this.props.store.getState().uiState;
+
     if (APP_CONST.UI_STATE_PLAYING === currUIState ||
       APP_CONST.UI_STATE_PAUSE === currUIState) {
       const op = (APP_CONST.UI_STATE_PLAYING === currUIState) ?
         APP_CONST.UI_OP_PAUSE :
         APP_CONST.UI_OP_RESUME;
-      const nextUIState = APP_CONST.getUINextState(currUIState, op);
 
-      this.setState({
-        uiState: nextUIState,
-      });
+      dispatch(gamePausedResumedAction(op));
 
+      const nextState = this.props.store.getState();
+      const nextUIState = nextState.uiState;
       if (APP_CONST.UI_STATE_PLAYING === nextUIState &&
-        APP_CONST.OPPONENT_KIND_ENGINE === this.state.opponentKind &&
-        this.state.myColor !== this.state.position.position.turn)
+        APP_CONST.OPPONENT_KIND_ENGINE === nextState.opponentKind &&
+        nextState.myColor !== nextState.position.position.turn)
         {
-          setTimeout(this.handleEngineMove, 1000);
+          setTimeout(() => {this.handleEngineMove(dispatch);}, 1000);
         }
     }
   }
 
-  handleCancel() {
-    const currUIState = this.state.uiState;
+  handleCancel(dispatch) {
+    const currUIState = this.props.store.getState().uiState;
+
     if (APP_CONST.UI_STATE_PLAYING === currUIState ||
       APP_CONST.UI_STATE_PAUSE === currUIState) {
-        const nextUIState = APP_CONST.getUINextState(currUIState, APP_CONST.UI_OP_CANCEL);
-
-        this.setState({
-          uiState: nextUIState,
-        });
+        dispatch(gameCanceledAction());
       }
   }
 
   //=== Board ===
-  handleSquareClick(file, row) {
-    const uiState = this.state.uiState;
-    const isEngineOpponent = (APP_CONST.OPPONENT_KIND_ENGINE === this.state.opponentKind);
-    const myTurn = (this.state.myColor === this.state.position.position.turn);
+  handleSquareClick(dispatch,file, row) {
+    const currState = this.props.store.getState();
+
+    const uiState = currState.uiState;
+    const isEngineOpponent = (APP_CONST.OPPONENT_KIND_ENGINE === currState.opponentKind);
+    const myTurn = (currState.myColor === currState.position.position.turn);
     let pos = null;
 
     if (APP_CONST.UI_STATE_PLAYING === uiState) {
       if (!isEngineOpponent || (isEngineOpponent && myTurn)) {
         pos = this.tryMove(file + row);
         if (null !== pos) {
-          this.playerMoved(file + row, pos);
+          this.playerMoved(dispatch, file + row, pos);
 
           if (isEngineOpponent) {
-            setTimeout(this.handleEngineMove, 1000);
+            setTimeout(() => {this.handleEngineMove(dispatch);}, 1000);
           }
         }
       }
     }
   }
 
-  handleEngineMove() {
-    const uiState = this.state.uiState;
-    const isEngineOpponent = (APP_CONST.OPPONENT_KIND_ENGINE === this.state.opponentKind);
-    const engineTurn = (this.state.myColor !== this.state.position.position.turn);
+  handleEngineMove(dispatch) {
+    const currState = this.props.store.getState();
+
+    const uiState = currState.uiState;
+    const isEngineOpponent = (APP_CONST.OPPONENT_KIND_ENGINE === currState.opponentKind);
+    const engineTurn = (currState.myColor !== currState.position.position.turn);
     let pos = null;
 
     if (APP_CONST.UI_STATE_PLAYING === uiState) {
@@ -229,7 +199,7 @@ class ReversiApp extends Component {
 
           pos = this.tryMove(sqAlgebricNotation);
           if (null !== pos) {
-            this.playerMoved(sqAlgebricNotation, pos);
+            this.playerMoved(dispatch,sqAlgebricNotation, pos);
           }
         }
       }
@@ -237,18 +207,17 @@ class ReversiApp extends Component {
   }
 
   //=== Score sheet ===
-  handleSheetCellClick(ply) {
-    const uiState = this.state.uiState;
+  handleSheetCellClick(dispatch, ply) {
+    const currState = this.props.store.getState();
+    const uiState = currState.uiState;
 
     if (APP_CONST.UI_STATE_END_OF_GAME === uiState ||
       APP_CONST.UI_STATE_CANCELED === uiState) {
 
-      const positions = this.state.game.positions;
+      const positions = currState.game.positions;
       if (ply < positions.length) {
         const pos = positions[ply];
-        this.setState({
-          position: {position: pos, currMove: this.state.game.moves[ply-1], },
-        });
+        dispatch(replayAction(currState.game.moves[ply-1], pos));
       }
     }
   }
@@ -257,32 +226,26 @@ class ReversiApp extends Component {
   render() {
     return (
       <div>
-        <NewGameForm
-          currOpponentKind={this.state.opponentKind}
-          currMyColor={this.state.myColor}
-          display={this.state.showNewGameForm}
+        <NewGameFormContainer
           onClose={this.handleNewGameFormClose}
-          onGo={this.handleNewGameFormGo}/>
+          onGo={this.handleNewGameFormGo}
+        />
         <div>
-          <Indicators uiState={this.state.uiState}
-            opponentKind={this.state.opponentKind}
-            myColor={this.state.myColor}
-            blinkWinnerMessage={this.state.blinkWinnerMessage}
-            playerToMove={this.state.position.position.turn}
-            onOpponentTypeClick={this.handleNewGameFormShow}/>
+          <IndicatorsContainer
+            onOpponentTypeClick={this.handleNewGameFormShow}
+          />
         </div>
         <div className="page-row">
-          <GameManagement uiState={this.state.uiState}
+          <GameManagementContainer
             onPuseResume={this.handlePuaseResume}
-            onCancel={this.handleCancel}/>
-          <Board position={this.state.position}
-            moves={this.state.game.moves}
-            onMove={(f,r) => this.handleSquareClick(f,r)}/>
-          <ScoreSheet uiState={this.state.uiState}
-            result={this.state.game.result}
-            position={this.state.position}
-            moves={this.state.game.moves}
-            onCellClick={this.handleSheetCellClick}/>
+            onCancel={this.handleCancel}
+          />
+          <BoardContainer
+            onMove={(dispatch,f,r) => this.handleSquareClick(dispatch,f,r)}
+          />
+          <ScoreSheetContainer
+            onCellClick={this.handleSheetCellClick}
+          />
         </div>
       </div>
     );
