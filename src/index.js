@@ -18,8 +18,9 @@ game.start();
 const pos = game.currentPosition.clone(); //Copy of the position, view-only.
 
 const intialState = {
-  game: game,
   position: {position: pos, currMove: ''},
+  result: GAME_CONST.GAME_SCORE_NA,
+  moves: [],
   uiState: APP_CONST.UI_STATE_GAME_TO_START,
   opponentKind: APP_CONST.OPPONENT_KIND_ENGINE,
   myColor: PLAYER_LIGHT,

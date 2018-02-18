@@ -4,7 +4,7 @@ const blinkWinnerMessageReducer = (state=null, action) => {
   let rv = state;
 
   if (NEW_GAME === action.type) {
-    rv = {active: false, visible: false, winner: action.game.result};
+    rv = {active: false, visible: false, winner: action.result};
   } else if (GAME_OVER === action.type) {
     rv = {active: true, visible: true, winner: action.result};
   } else if (WINNER_MESSAGE === action.type) {

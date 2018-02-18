@@ -29,10 +29,10 @@ export function gamePausedResumedAction(operation) {
   };
 }
 
-export function newGameAction(newGame, whichOpponent, whichMyColor) {
+export function newGameAction(whichOpponent, whichMyColor, initialPosition) {
   return {
     type: NEW_GAME,
-    game: newGame,
+    position: initialPosition,
     opponentKind: whichOpponent,
     myColor: whichMyColor,
   };

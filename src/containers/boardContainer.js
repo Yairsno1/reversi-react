@@ -4,7 +4,7 @@ import Board from '../board';
 const mapStateToProps = (state) => {
   return {
     position: state.position,
-    moves: state.game.moves,
+    moves: state.moves,
   };
 };
 

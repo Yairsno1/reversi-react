@@ -35,14 +35,18 @@ class ReversiApp extends Component {
     this.handleEngineMove = this.handleEngineMove.bind(this);
     this.handleSheetCellClick = this.handleSheetCellClick.bind(this);
 
+    //Model:
+    this.game = new Game();
+    this.game.start();
     this.engine = null;
+
     this.blinkArgs = {Id: -1, count: 0};
   }
 
   playerMoved(dispatch, move, pos) {
     dispatch(playerMovedAction(move, pos));
 
-    const game = this.props.store.getState().game;
+    const game = this.game;
     if (GAME_CONST.GAME_STATUS_OVER === game.status) {
       this.blinkArgs.Id = setInterval(() => {this.handleWinnerBlink(dispatch);}, 750);
 
@@ -57,7 +61,7 @@ class ReversiApp extends Component {
     //is on the callers.
     let rv = null;
 
-    const newPosition = this.props.store.getState().game.move(squareByAlgebricNotation);
+    const newPosition = this.game.move(squareByAlgebricNotation);
     if (null !== newPosition) {
       rv = newPosition.clone();
     }
@@ -80,13 +84,14 @@ class ReversiApp extends Component {
 
     const prevUIState = prevState.uiState;
 
-    let game = prevState.game;
     if (APP_CONST.UI_STATE_CANCELED === prevUIState ||
       APP_CONST.UI_STATE_END_OF_GAME === prevUIState) {
-        game = new Game();
-        game.start();
+        this.game = new Game();
+        this.game.start();
     }
-    dispatch(newGameAction(game, whichOpponent, whichColor));
+    const game = this.game;
+
+    dispatch(newGameAction(whichOpponent, whichColor, game.currentPosition.clone()));
 
     if (APP_CONST.OPPONENT_KIND_ENGINE === whichOpponent) {
       this.engine = new Reveri(game, PLAYER_LIGHT === whichColor ? PLAYER_DARK : PLAYER_LIGHT);
@@ -123,7 +128,7 @@ class ReversiApp extends Component {
 
       dispatch(winnerMessageAction(
         this.blinkArgs.count > 0,
-        currState.game.result));
+        this.game.result));
     }
 
   }
@@ -214,10 +219,10 @@ class ReversiApp extends Component {
     if (APP_CONST.UI_STATE_END_OF_GAME === uiState ||
       APP_CONST.UI_STATE_CANCELED === uiState) {
 
-      const positions = currState.game.positions;
+      const positions = this.game.positions;
       if (ply < positions.length) {
         const pos = positions[ply];
-        dispatch(replayAction(currState.game.moves[ply-1], pos));
+        dispatch(replayAction(this.game.moves[ply-1], pos));
       }
     }
   }

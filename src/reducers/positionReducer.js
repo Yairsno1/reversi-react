@@ -4,7 +4,7 @@ const positionReducer = (state=null, action) => {
   let rv = state;
 
   if (NEW_GAME === action.type) {
-    const pos = action.game.currentPosition.clone();
+    const pos = action.position;
     rv = {position: pos, currMove: '', };
   } else if (PLAYER_MOVED === action.type) {
     rv = {position: action.position, currMove: action.move,};

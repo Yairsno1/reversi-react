@@ -4,9 +4,9 @@ import ScoreSheet from '../scoreSheet';
 const mapStateToProps = (state) => {
   return {
     uiState: state.uiState,
-    result: state.game.result,
+    result: state.result,
     position: state.position,
-    moves: state.game.moves,
+    moves: state.moves,
   };
 };
 
