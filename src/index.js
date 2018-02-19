@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './css/index.css';
-import ReversiApp from './ReversiApp';
+import ReversiController from './controller';
 import registerServiceWorker from './registerServiceWorker';
 
 const game = new Game();
@@ -36,7 +36,7 @@ let store = createStore(rootReducer,
 
 ReactDOM.render(
   <Provider store={store}>
-    <ReversiApp store={store}/>
+    <ReversiController store={store}/>
   </Provider>,
   document.getElementById('root')
 );
